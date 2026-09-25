@@ -1,0 +1,10 @@
+name = "delivery-life"
+compatibility_date = "2025-09-01"
+pages_build_output_dir = "./public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "delivery-life"
+# `npm run db:create` 後に表示される database_id に差し替えてください
+database_id = "62fe5a01-62fa-43b5-b3c4-d2891103f132"
+preview_database_id = "DB"

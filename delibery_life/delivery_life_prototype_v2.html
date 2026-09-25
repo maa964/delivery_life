@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DELIVERY LIFE v2</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--text:#17181b;--muted:#74777d;--line:#e3e5e8;--accent:#111}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{max-width:780px;margin:auto;padding:20px 16px 70px}header{display:flex;justify-content:space-between;margin-bottom:16px}
+.logo{font-weight:900;letter-spacing:.08em}.date,.mini{font-size:12px;color:var(--muted)}
+.hero,.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:12px}
+.label{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.1em}.balance{font-size:46px;font-weight:900;letter-spacing:-.04em}
+.progress{height:9px;background:#eceef0;border-radius:99px;overflow:hidden;margin:12px 0}.progress i{display:block;height:100%;background:var(--accent);width:0;transition:.3s}
+.stats,.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.stat,.kpi{border-top:1px solid var(--line);padding-top:9px}
+.stat b,.kpi b{display:block;font-size:17px}.stat span,.kpi span{font-size:10px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}h2{font-size:15px;margin:0 0 13px}
+input,select,button{font:inherit}input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:8px}
+button{border:0;border-radius:10px;padding:10px 12px;font-weight:800;cursor:pointer}.primary{background:#111;color:#fff}.ghost{background:#eef0f2}.danger{background:#fff;color:#b33}
+.task{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0}
+.task small{display:block;color:var(--muted);font-size:11px}.reward{font-weight:900;white-space:nowrap}.empty{color:var(--muted);font-size:13px}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quick button{text-align:left;background:#eef0f2}
+.category{display:grid;grid-template-columns:70px 1fr 70px;gap:8px;align-items:center;margin:9px 0;font-size:12px}.bar{height:8px;background:#eceef0;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:#111}
+.best{font-size:25px;font-weight:900}.level{display:inline-block;background:#111;color:#fff;border-radius:99px;padding:3px 8px;font-size:11px}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.stats,.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body><main class="app">
+<header><div class="logo">DELIVERY / LIFE</div><div class="date" id="date"></div></header>
+
+<section class="hero">
+<div class="label">TODAY'S REWARD</div><div class="balance"><span id="today">0</span> pt</div>
+<div class="progress"><i id="progress"></i></div>
+<div class="stats"><div class="stat"><b id="week">0</b><span>THIS WEEK</span></div><div class="stat"><b id="month">0</b><span>THIS MONTH</span></div><div class="stat"><b id="all">0</b><span>ALL TIME</span></div><div class="stat"><b id="count">0</b><span>DELIVERIES</span></div></div>
+<div class="kpis"><div class="kpi"><b id="rate">0</b><span>PT / H</span></div><div class="kpi"><b id="best">0</b><span>BEST DAY</span></div><div class="kpi"><b id="level">Lv.1</b><span>LEVEL</span></div><div class="kpi"><b id="goalLabel">3,000</b><span>GOAL</span></div></div>
+</section>
+
+<div class="grid">
+<section class="card"><h2>＋ 配達完了</h2>
+<form id="form"><input id="name" maxlength="80" placeholder="例：FE問題を10問解く" required>
+<select id="cat"><option>学習</option><option>開発</option><option>調査</option><option>制作</option><option>仕事</option><option>趣味</option><option>その他</option></select>
+<input id="points" type="number" min="1" max="100000" value="500" required>
+<input id="minutes" type="number" min="0" max="1440" value="30" placeholder="所要時間（分）">
+<button class="primary">配達完了　＋<span id="preview">500</span> pt</button></form></section>
+
+<section class="card"><h2>今日の目標</h2><input id="goal" type="number" min="1" max="1000000" value="3000">
+<p class="mini">努力時間ではなく「完了した仕事」に報酬を付けます。</p>
+<h2 style="margin-top:18px">⚡ クイック配達</h2>
+<div class="quick"><button data-n="15分だけ集中" data-p="150">15分　＋150</button><button data-n="30分作業" data-p="300">30分　＋300</button><button data-n="小さな成果物完成" data-p="800">成果物　＋800</button><button data-n="技術調査をまとめる" data-p="500">調査　＋500</button></div></section>
+</div>
+
+<section class="card"><h2>📦 今日の配達</h2><div id="history"></div></section>
+<section class="card"><h2>📊 今月の配達先</h2><div id="cats"></div></section>
+<section class="card"><h2>🏆 自己ベスト</h2><div class="best" id="bestText">まだ記録がありません</div><div class="mini" id="bestSub"></div></section>
+<section class="card"><button class="ghost" id="demo">デモデータ</button> <button class="danger" id="reset">全データ削除</button></section>
+</main>
+
+<script>
+"use strict";
+const KEY="delivery-life-v2";
+let state={tasks:[],goal:3000};
+const $=id=>document.getElementById(id);
+function todayKey(d=new Date()){return d.toISOString().slice(0,10)}
+function fmt(n){return Math.round(n).toLocaleString("ja-JP")}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){console.error(e);alert("保存に失敗しました。ブラウザの保存領域を確認してください。")}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||"null");if(x&&Array.isArray(x.tasks))state={tasks:x.tasks,goal:Number.isFinite(x.goal)?x.goal:3000}}catch(e){console.error(e)}}
+function monday(d){let x=new Date(d);let n=x.getDay()||7;x.setDate(x.getDate()-n+1);x.setHours(0,0,0,0);return x}
+function add(name,cat,points,minutes){if(!name.trim())throw Error("タスク名を入力してください");if(!Number.isInteger(points)||points<1||points>100000)throw Error("ポイントは1〜100,000の整数です");if(!Number.isFinite(minutes)||minutes<0)throw Error("時間が不正です");state.tasks.push({id:(crypto.randomUUID?.()||String(Date.now()+Math.random())),name:name.trim(),cat,points,minutes,date:todayKey(),createdAt:new Date().toISOString()})}
+function render(){
+ const now=new Date(), td=todayKey(), mon=monday(now), ym=td.slice(0,7), ts=state.tasks.filter(x=>x.date===td);
+ const sum=a=>a.reduce((s,x)=>s+x.points,0), tp=sum(ts), wp=sum(state.tasks.filter(x=>new Date(x.createdAt)>=mon)), mp=sum(state.tasks.filter(x=>x.date.startsWith(ym))), ap=sum(state.tasks);
+ const mins=ts.reduce((s,x)=>s+(Number(x.minutes)||0),0), rate=mins?tp/(mins/60):0;
+ const byDay={};state.tasks.forEach(x=>byDay[x.date]=(byDay[x.date]||0)+x.points);
+ const best=Object.entries(byDay).sort((a,b)=>b[1]-a[1])[0], level=Math.floor(ap/5000)+1;
+ $("date").textContent=now.toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric"});
+ $("today").textContent=fmt(tp);$("week").textContent=fmt(wp);$("month").textContent=fmt(mp);$("all").textContent=fmt(ap);$("count").textContent=ts.length;
+ $("rate").textContent=fmt(rate);$("best").textContent=best?fmt(best[1]):"0";$("level").textContent="Lv."+level;$("goalLabel").textContent=fmt(state.goal);
+ $("progress").style.width=Math.min(100,tp/state.goal*100)+"%";$("goal").value=state.goal;
+ const h=$("history");h.innerHTML=ts.length?"":"<div class='empty'>まだ配達はありません。最初の1件を完了しましょう。</div>";
+ [...ts].reverse().forEach(x=>{const d=document.createElement("div");d.className="task";d.innerHTML="<div></div><b class='reward'></b>";d.firstChild.innerHTML="<div>"+escapeHtml(x.name)+"</div><small>"+escapeHtml(x.cat)+" ・ "+new Date(x.createdAt).toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"})+" ・ "+x.minutes+"分</small>";d.lastChild.textContent="+"+fmt(x.points)+" pt";h.appendChild(d)});
+ const cm={};state.tasks.filter(x=>x.date.startsWith(ym)).forEach(x=>cm[x.cat]=(cm[x.cat]||0)+x.points);const max=Math.max(1,...Object.values(cm));$("cats").innerHTML="";
+ Object.entries(cm).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{const r=document.createElement("div");r.className="category";r.innerHTML="<span>"+escapeHtml(k)+"</span><div class='bar'><i></i></div><b>"+fmt(v)+"</b>";r.querySelector("i").style.width=v/max*100+"%";$("cats").appendChild(r)});
+ if(!Object.keys(cm).length)$("cats").innerHTML="<div class='empty'>今月の記録はまだありません。</div>";
+ $("bestText").textContent=best?fmt(best[1])+" pt":"まだ記録がありません";$("bestSub").textContent=best?best[0]+" の自己ベスト":"";
+}
+function escapeHtml(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+$("form").addEventListener("submit",e=>{e.preventDefault();try{add($("name").value,$("cat").value,Number($("points").value),Number($("minutes").value));save();e.target.reset();$("points").value=500;$("minutes").value=30;$("preview").textContent="500";render()}catch(err){alert(err.message||"登録に失敗しました")}})
+$("points").addEventListener("input",e=>$("preview").textContent=fmt(Number(e.target.value)||0));
+$("goal").addEventListener("change",e=>{const n=Number(e.target.value);if(Number.isInteger(n)&&n>0&&n<=1000000){state.goal=n;save();render()}else alert("目標は1〜1,000,000 ptです")});
+document.querySelectorAll(".quick button").forEach(b=>b.addEventListener("click",()=>{try{add(b.dataset.n,"その他",Number(b.dataset.p),0);save();render()}catch(e){alert(e.message)}}));
+$("demo").addEventListener("click",()=>{const d=todayKey(),n=Date.now();state.tasks=[{id:"1",name:"FE問題を10問解く",cat:"学習",points:500,minutes:25,date:d,createdAt:new Date(n-7200000).toISOString()},{id:"2",name:"AIエージェントを調査",cat:"調査",points:800,minutes:40,date:d,createdAt:new Date(n-3600000).toISOString()},{id:"3",name:"UIを1画面完成",cat:"制作",points:1000,minutes:70,date:d,createdAt:new Date(n-1200000).toISOString()}];save();render()});
+$("reset").addEventListener("click",()=>{if(confirm("全データを削除しますか？")){state={tasks:[],goal:3000};save();render()}});
+load();render();
+</script></body></html>
