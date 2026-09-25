@@ -5,7 +5,7 @@
 ## 構成
 
 ```
-delibery_life/
+.
 ├── public/index.html          # フロント（静的）
 ├── functions/api/             # Pages Functions（D1 API）
 ├── migrations/0001_init.sql   # D1 スキーマ
@@ -24,7 +24,6 @@ delibery_life/
 ## セットアップ
 
 ```bash
-cd delibery_life
 npm install
 npx wrangler login
 ```
@@ -73,7 +72,7 @@ Cloudflare ダッシュボード → **Workers & Pages** → 対象プロジェ�
 | 設定項目 | 値 |
 |---------|-----|
 | Framework preset | **None**（Next.js 等は選ばない） |
-| Root directory (advanced) | `delibery_life` |
+| Root directory (advanced) | （空欄） |
 | Build command | `exit 0` |
 | Build output directory | `public` |
 
@@ -83,6 +82,9 @@ Cloudflare ダッシュボード → **Workers & Pages** → 対象プロジェ�
 
 `Couldn't find any pages or app directory`  
 → Framework preset が Next.js になっています。**None** に変更してください。
+
+`Output directory "public" not found` / `No functions dir`  
+→ Root directory が空欄になっているか確認してください（リポジトリ直下がプロジェクトルートです）。
 
 #### D1 バインディング（Git 連携時）
 
