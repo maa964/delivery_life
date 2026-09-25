@@ -4,6 +4,7 @@
   "private": true,
   "description": "DELIVERY LIFE — Cloudflare Pages + D1",
   "scripts": {
+    "build": "exit 0",
     "dev": "wrangler pages dev public --d1=DB --persist-to=.wrangler/state",
     "db:create": "wrangler d1 create delivery-life",
     "db:migrate:local": "wrangler d1 migrations apply delivery-life --local",

@@ -55,7 +55,7 @@ npm run dev
 
 ブラウザで表示された URL（例: `http://127.0.0.1:8788`）を開く。
 
-### 4. デプロイ
+### 4. デプロイ（CLI）
 
 ```bash
 npm run deploy
@@ -63,6 +63,35 @@ npm run deploy
 
 初回は Cloudflare ダッシュボードで Pages プロジェクト `delivery-life` が作成されます。  
 ダッシュボード側で D1 バインディング（変数名 `DB`）が付いていることを確認してください（`wrangler.toml` から自動反映されます）。
+
+### 5. GitHub 連携（オートデプロイ）
+
+このプロジェクトは **静的 HTML + Pages Functions** です。Next.js ではありません。
+
+Cloudflare ダッシュボード → **Workers & Pages** → 対象プロジェクト → **Settings** → **Builds & deployments** で次を設定してください。
+
+| 設定項目 | 値 |
+|---------|-----|
+| Framework preset | **None**（Next.js 等は選ばない） |
+| Root directory (advanced) | `delibery_life` |
+| Build command | `exit 0` |
+| Build output directory | `public` |
+
+設定後、**Deployments** から Retry deployment、または `main` に push して再ビルドします。
+
+#### よくあるエラー
+
+`Couldn't find any pages or app directory`  
+→ Framework preset が Next.js になっています。**None** に変更してください。
+
+#### D1 バインディング（Git 連携時）
+
+**Settings → Functions → D1 database bindings** で次を追加します。
+
+| 項目 | 値 |
+|------|-----|
+| Variable name | `DB` |
+| D1 database | `delivery-life` |
 
 ## 注意
 
